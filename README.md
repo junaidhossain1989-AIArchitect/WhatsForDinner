@@ -67,6 +67,8 @@ For a phone on a different network or behind local network restrictions, use a t
 npx expo start --tunnel
 ```
 
+The first tunnel run may ask to install the global `@expo/ngrok` helper. Approve that installation, then scan the public QR code shown by Expo. If port 8081 is busy, Expo will select another port.
+
 Scan the displayed QR code with Expo Go. For web, open the web URL printed by Expo, usually `http://localhost:8081`.
 
 If an old Expo server is using port 8081, Expo may select another port. Use the URL and QR code from the active server.
@@ -145,6 +147,10 @@ This module is the single source of truth for Gemini prompt text. It exports fix
 
 Keeping prompt construction separate from networking makes prompt changes easier to review without changing request logic.
 
+### Audio configuration: `config/audioConfig.js`
+
+This module defines `HIGH_QUALITY_AAC_PRESET`, a reusable set of platform-specific recording settings for Android, iOS, and web. The current screen keeps an equivalent recording configuration inline; importing this preset into `App.js` is a natural follow-up when the recording settings should have one source of truth.
+
 ## Project Layout
 
 ```text
@@ -154,7 +160,8 @@ Keeping prompt construction separate from networking makes prompt changes easier
 ├── store.js                  # Zustand session store
 ├── geminiService.js          # Gemini API requests and response parsing
 ├── config/
-│   └── prompts.js            # Centralized Gemini prompts
+│   ├── prompts.js            # Centralized Gemini prompts
+│   └── audioConfig.js        # Platform-specific recording preset
 ├── assets/                   # App icons and web favicon
 ├── app.json                  # Expo application configuration
 ├── package.json              # Scripts and dependencies
@@ -207,9 +214,24 @@ npx expo export --platform web
 
 Generated folders such as `node_modules/`, `.expo/`, `dist/`, and `coverage/` are ignored by Git.
 
+## Roadmap / TODO
+
+### Phase 2 (Next)
+
+- Smart pantry inventory and dynamic status UX updates.
+
+### Phase 3
+
+- Automated scheduled fridge snapshots and macro/dietary filters.
+
+### Phase 4
+
+- Native iOS App Store release and auto-generated shopping lists.
+
 ## Notes
 
 - Use an Expo Go build compatible with SDK 54.
 - Native camera and microphone behavior must be tested on a physical device or configured emulator.
+- `expo-av` is used for the current recording workflow and is deprecated in newer Expo SDKs; migrating to `expo-audio` should be treated as a future upgrade task.
 - The current app sends Gemini requests directly from the client. A production release should use a backend proxy so the API key is not distributed in the application bundle.
 - The Gemini response format is parsed as JSON. Changes to prompts or model output should preserve the documented array and recipe object shapes.

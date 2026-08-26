@@ -5,6 +5,7 @@ node_modules/
 
 # Expo
 .expo/
+.eas/
 dist/
 web-build/
 expo-env.d.ts
@@ -31,13 +32,18 @@ coverage/
 
 # macOS
 .DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# certificates and private keys
 *.pem
 
 # local env files
 .env
 .env.*
 !.env.example
-.env*.local
 
 # typescript
 *.tsbuildinfo

@@ -4,6 +4,7 @@
   "main": "index.js",
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~54.0.8",
     "expo-av": "~16.0.8",
     "expo-camera": "~17.0.10",
@@ -23,5 +24,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@expo/ngrok": "^4.1.3"
+  }
 }

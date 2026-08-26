@@ -2,24 +2,29 @@
   "expo": {
     "name": "WhatsForDinnerApp",
     "slug": "WhatsForDinnerApp",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "package": "Whats.For.Dinner",
+      "bundleIdentifier": "Whats.For.Dinner",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
+        "foregroundImage": "./assets/AppLogo.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "package": "Whats.For.Dinner"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/AppLogo.png"
     },
     "extra": {
       "eas": {
