@@ -98,6 +98,44 @@ export default function App() {
     }
   };
 
+  const takePhotoAndScan = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permission Required',
+        'Camera access is needed to take photos of your fridge. Please enable camera access in your device settings.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() }
+        ]
+      );
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      base64: true,
+      quality: 0.2,
+      maxWidth: 800,
+      maxHeight: 800,
+    });
+
+    if (!result.canceled && result.assets[0].base64) {
+      const stopAnimation = startLoadingAnimation(IMAGE_LOADING_MESSAGES);
+      try {
+        const detected = await processFridgeImage(result.assets[0].base64, apiKey);
+        detected.forEach(item => addIngredient(item));
+      } catch (err) {
+        Alert.alert("Error", err.message || "Could not process image.");
+      } finally {
+        stopAnimation();
+        setLoading(false);
+      }
+    }
+  };
+
   const startRecording = async () => {
     try {
       if (Platform.OS === 'web') {
@@ -250,15 +288,19 @@ export default function App() {
         )}
 
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.btnSecondary} onPress={pickImageAndScan}>
-            <Text style={styles.btnText}>📸 Scan Photo</Text>
+          <TouchableOpacity style={styles.btnCamera} onPress={takePhotoAndScan}>
+            <Text style={styles.btnText}>📸 Take Photo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.btnGallery} onPress={pickImageAndScan}>
+            <Text style={styles.btnText}>�️ Gallery</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={[styles.btnMic, isRecording && styles.btnMicActive]} 
             onPress={isRecording ? stopRecording : startRecording}
           >
-            <Text style={styles.btnText}>{isRecording ? "🔴 Stop Recording" : "🎙️ Hold / Tap Mic"}</Text>
+            <Text style={styles.btnText}>{isRecording ? "🔴 Stop" : "🎙️ Mic"}</Text>
           </TouchableOpacity>
         </View>
 
@@ -346,7 +388,7 @@ const styles = StyleSheet.create({
   btnSave: { backgroundColor: '#28A745', padding: 10, borderRadius: 6, alignItems: 'center' },
   btnSaveText: { color: '#FFF', fontWeight: 'bold' },
   subHeader: { fontSize: 16, fontWeight: '600', marginTop: 15, marginBottom: 8 },
-  buttonRow: { flexDirection: 'row', gap: 10, marginBottom: 15 },
+  buttonRow: { flexDirection: 'row', gap: 8, marginBottom: 15 },
   inputRow: { flexDirection: 'row', marginBottom: 10 },
   input: { flex: 1, borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 10, backgroundColor: '#FFF' },
   btnAdd: { backgroundColor: '#28A745', justifyContent: 'center', paddingHorizontal: 15, borderRadius: 8, marginLeft: 8 },
@@ -360,7 +402,8 @@ const styles = StyleSheet.create({
   activeText: { color: '#FFF', fontWeight: 'bold' },
   btnPrimary: { backgroundColor: '#007AFF', padding: 15, borderRadius: 8, marginTop: 25, alignItems: 'center' },
   btnPrimaryText: { color: '#FFF', fontSize: 16, fontWeight: 'bold' },
-  btnSecondary: { backgroundColor: '#6C757D', padding: 12, borderRadius: 8, flex: 1, alignItems: 'center' },
+  btnCamera: { backgroundColor: '#FF9500', padding: 12, borderRadius: 8, flex: 1, alignItems: 'center' },
+  btnGallery: { backgroundColor: '#6C757D', padding: 12, borderRadius: 8, flex: 1, alignItems: 'center' },
   btnMic: { backgroundColor: '#17A2B8', padding: 12, borderRadius: 8, flex: 1, alignItems: 'center' },
   btnMicActive: { backgroundColor: '#DC3545' },
   btnAlt: { backgroundColor: '#FF9500', padding: 12, borderRadius: 8, flex: 1, alignItems: 'center' },

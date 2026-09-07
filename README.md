@@ -4,7 +4,7 @@ A React Native / Expo app that turns fridge photos, voice recordings, or manuall
 
 ## Features
 
-- Scan a food image and extract ingredients with Gemini.
+- Take a photo with your device camera or select from photo gallery to extract ingredients with Gemini.
 - Record a voice note and extract spoken ingredients.
 - Add and remove ingredients manually.
 - Choose a cuisine preference.
@@ -173,12 +173,14 @@ This module defines `HIGH_QUALITY_AAC_PRESET`, a reusable set of platform-specif
 
 ### Image ingredient scan
 
-1. The user taps **Scan Photo**.
-2. `expo-image-picker` returns a base64 image.
-3. `App.js` calls `processFridgeImage`.
-4. `geminiService.js` sends the image and configured prompt to Gemini.
-5. The returned ingredient array is added to Zustand state.
-6. The ingredient chips update in the UI.
+1. The user taps **Take Photo** or **Gallery**.
+2. For camera: `expo-image-picker` requests camera permissions and launches the device camera.
+3. For gallery: `expo-image-picker` opens the photo library.
+4. `expo-image-picker` returns a base64 image from either source.
+5. `App.js` calls `processFridgeImage`.
+6. `geminiService.js` sends the image and configured prompt to Gemini.
+7. The returned ingredient array is added to Zustand state.
+8. The ingredient chips update in the UI.
 
 ### Voice ingredient scan
 
@@ -213,6 +215,29 @@ npx expo export --platform web
 ```
 
 Generated folders such as `node_modules/`, `.expo/`, `dist/`, and `coverage/` are ignored by Git.
+
+## Camera Implementation
+
+The app uses `expo-image-picker` for both camera capture and gallery selection:
+
+- **Camera Capture**: Uses `launchCameraAsync` with `requestCameraPermissionsAsync` for permission handling
+- **Gallery Selection**: Uses `launchImageLibraryAsync` for photo library access
+- **Permission Handling**: Graceful user alerts for camera permission denials with settings navigation
+- **Error Handling**: Proper cancellation handling when users close camera/gallery without selecting images
+- **Base64 Encoding**: Both camera and gallery images are converted to base64 for Gemini API processing
+
+### Permissions
+
+The app requires the following permissions configured in `app.json`:
+
+**iOS:**
+- `NSCameraUsageDescription`: Camera access for taking fridge photos
+- `NSPhotoLibraryUsageDescription`: Photo library access for selecting fridge photos
+
+**Android:**
+- `CAMERA`: Camera access
+- `READ_EXTERNAL_STORAGE`: Photo library access
+- `WRITE_EXTERNAL_STORAGE`: File system access for image processing
 
 ## Roadmap / TODO
 
